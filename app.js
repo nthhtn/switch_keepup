@@ -3,10 +3,9 @@ import session from 'express-session';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import webpack from 'webpack';
-import redis from 'redis';
+import passport from 'passport';
 
 import db from './server/models';
-import { redis_host } from './config/redis';
 
 const app = express();
 
@@ -15,15 +14,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/assets', express.static(`${__dirname}/static`));
 
-const redisStore = require('connect-redis')(session);
-const redisClient = redis.createClient();
-
 app.use(session({
 	secret: 'master_thesis',
 	resave: false,
-	saveUninitialized: false,
-	store: new redisStore({ host: redis_host, port: 6379, client: redisClient })
+	saveUninitialized: false
 }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+	console.log('serialize');
+	console.log(user);
+	return done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+	console.log('deserialize');
+	return done(null, user);
+});
 
 app.use(morgan('dev'));
 

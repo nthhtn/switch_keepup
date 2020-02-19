@@ -39,6 +39,30 @@ const rootComponent = (
 										</Link>
 									</li>
 									<li className="nav-main-item">
+										<Link className="nav-main-link active" to="/dashboard/calibrations">
+											<i className="nav-main-link-icon si si-docs"></i>
+											<span className="nav-main-link-name">Calibration</span>
+										</Link>
+									</li>
+									<li className="nav-main-item">
+										<Link className="nav-main-link active" to="/dashboard/categories">
+											<i className="nav-main-link-icon si si-list"></i>
+											<span className="nav-main-link-name">Category</span>
+										</Link>
+									</li>
+									<li className="nav-main-item">
+										<Link className="nav-main-link active" to="/dashboard/departments">
+											<i className="nav-main-link-icon si si-grid"></i>
+											<span className="nav-main-link-name">Department</span>
+										</Link>
+									</li>
+									<li className="nav-main-item">
+										<Link className="nav-main-link active" to="/dashboard/users">
+											<i className="nav-main-link-icon si si-users"></i>
+											<span className="nav-main-link-name">User</span>
+										</Link>
+									</li>
+									<li className="nav-main-item">
 										<Link className="nav-main-link active" to="/logout">
 											<i className="nav-main-link-icon si si-logout"></i>
 											<span className="nav-main-link-name">Logout</span>

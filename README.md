@@ -4,6 +4,8 @@ This repository is dedicated to Switch KeepUp web application, in scope of Runni
 
 ### Technologies in use
 
+***
+
 * Node.js ft. Express:
 
 > Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Express is a fast, unopinionated, minimalist web framework for Node.js.
@@ -16,18 +18,13 @@ This repository is dedicated to Switch KeepUp web application, in scope of Runni
 
 > MySQL is a relational database management system based on SQL – Structured Query Language. The application is used for a wide range of purposes, including data warehousing, e-commerce, and logging applications. The most common use for mySQL however, is for the purpose of a web database. Sequelize is a promise-based Node.js ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server. It features solid transaction support, relations, eager and lazy loading, read replication and more.
 
-* Redis:
-
-> Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker. It supports data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes with radius queries and streams.
-
 ### Installation
 
 ***
 
-* Prerequisites: Install the following
+* Prerequisites: 
 	* Node.js: https://nodejs.org/en/
-	* MySQL: https://www.mysql.com/
-	* Redis: https://redis.io/
+	* MySQL: https://www.mysql.com/ ; Additionally, a SQL database and user must already exist
 
 * Clone project:
 ```
@@ -45,7 +42,6 @@ DB_NAME=your_mysql_database_name
 DB_USER=your_mysql_db_user
 DB_PWD=your_mysql_db_password
 DB_HOST=your_mysql_database_host
-REDIS_HOST=your_redis_host
 ```
 
 * Run project:
@@ -54,6 +50,8 @@ npm start
 ```
 
 ### Contributors
+
+***
 
 * Aleksi Ruokoniemi
 * Anukesh Chauhan
