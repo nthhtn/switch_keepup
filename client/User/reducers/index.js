@@ -1,3 +1,6 @@
 import { combineReducers } from 'redux';
 
-export default combineReducers({});
+import device from './Device';
+import category from './Category';
+
+export default combineReducers({ device, category });

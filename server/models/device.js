@@ -13,10 +13,11 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			unique: true
 		},
+		calibrationPeriod: DataTypes.INTEGER,
 		location: DataTypes.STRING,
 		seller: DataTypes.STRING,
 		servicePartner: DataTypes.STRING,
-		function: DataTypes.STRING,
+		deviceFunction: DataTypes.STRING,
 		quantity: DataTypes.INTEGER,
 		status: DataTypes.STRING,
 		comment: DataTypes.STRING

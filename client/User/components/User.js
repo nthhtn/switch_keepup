@@ -13,7 +13,12 @@ class UserItem extends Component {
 				<td>{this.props.username}</td>
 				<td>{this.props.email}</td>
 				<td>{this.props.fullname}</td>
-				<td>{this.props.role}</td>
+				<td>
+				{
+					this.props.role === 'Manager' ?
+						<span class="badge badge-success">{this.props.role}</span> : <span class="badge badge-danger">{this.props.role}</span>
+				}
+				</td>
 				<td className="text-center">
 					<div className="btn-group">
 						<button type="button"

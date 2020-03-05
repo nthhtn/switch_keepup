@@ -12,7 +12,12 @@ class CalibrationItem extends Component {
 			<tr>
 				<td>{this.props.deviceId}</td>
 				<td>{this.props.date}</td>
-				<td>{this.props.status}</td>
+				<td>
+					{
+						this.props.status === 'Completed' ?
+							<span class="badge badge-success">{this.props.status}</span> : <span class="badge badge-primary">{this.props.status}</span>
+					}
+				</td>
 				<td>{this.props.document}</td>
 			</tr>
 		);
