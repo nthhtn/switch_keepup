@@ -26,10 +26,6 @@ module.exports = (sequelize, DataTypes) => {
 		}
 	});
 
-	User.associate = (models) => {
-		models.User.hasMany(models.Device, { foreignKey: 'addedBy' });
-	};
-
 	return User;
 
 };

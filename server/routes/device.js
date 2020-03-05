@@ -1,5 +1,5 @@
 import express from 'express';
-import { Device } from '../models';
+import { Device, Category } from '../models';
 
 module.exports = (app) => {
 
@@ -16,7 +16,10 @@ module.exports = (app) => {
 		})
 		.get(async (req, res) => {
 			try {
-				const result = await Device.findAll({ order: [['createdAt', 'DESC']], raw: true });
+				const result = await Device.findAll({
+					include: [Category],
+					order: [['createdAt', 'DESC']], raw: true
+				});
 				return res.json({ success: true, result });
 			} catch (error) {
 				return res.json({ success: false, error: error.message });

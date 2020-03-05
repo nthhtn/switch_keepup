@@ -48,5 +48,6 @@ const syncOptions = {};
 db.sequelize.sync(syncOptions).then(async (connection) => {
 	console.log('Database setup complete...');
 	require('./server/routes')(app);
+	await require('./server/helpers/initdb')();
 	app.listen(8000, () => console.log('Switch KeepUp is listening on port 8000...'));
 });

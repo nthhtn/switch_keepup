@@ -14,10 +14,6 @@ module.exports = (sequelize, DataTypes) => {
 		description: DataTypes.STRING
 	});
 
-	Department.associate = (models) => {
-		models.Department.hasMany(models.Device, { foreignKey: 'departmentId' });
-	};
-
 	return Department;
 
 };

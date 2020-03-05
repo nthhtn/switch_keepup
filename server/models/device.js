@@ -28,24 +28,14 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: 'addedBy',
 			onDelete: 'CASCADE'
 		});
-	};
-
-	Device.associate = (models) => {
 		models.Device.belongsTo(models.Category, {
 			foreignKey: 'categoryId',
 			onDelete: 'CASCADE'
 		});
-	};
-
-	Device.associate = (models) => {
-		models.Device.belongsTo(models.Depatment, {
+		models.Device.belongsTo(models.Department, {
 			foreignKey: 'departmentId',
 			onDelete: 'CASCADE'
 		});
-	};
-
-	Device.associate = (models) => {
-		models.Device.hasMany(models.Calibration, { foreignKey: 'deviceId' });
 	};
 
 	return Device;

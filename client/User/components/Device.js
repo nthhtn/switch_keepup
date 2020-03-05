@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 import { createDevice, listDevice } from '../actions/Device';
 
@@ -14,56 +15,45 @@ export default class Device extends Component {
 
 	async componentDidMount() {
 		await this.props.dispatch(listDevice());
-		const devices = self.props.device.list;
-		const columns = [
-			{ data: 'id' },
-			{ data: 'name' },
-			{ data: 'description' },
-			{ data: 'serialNo' },
-			{ data: 'calibrationPeriod' },
-			{ data: 'location' },
-			{ data: 'seller' },
-			{ data: 'servicePartner' },
-			{ data: 'deviceFunction' },
-			{ data: 'comment' }
-		];
-		$('#table-device').DataTable({
-			paging: true,
-			ordering: true,
-			columns,
-			data: devices
-		});
 	}
 
 	async createDevice() {
 		const id = $('#create-id').val();
 		const name = $('#create-name').val();
-		// const categoryId = $('#create-category').val();
+		const categoryId = $('#create-category').val();
+		const categoryName = $('#create-category option:selected').text();
 		const description = $('#create-description').val() || '';
 		const serialNo = $('#create-serialno').val();
 		const calibrationPeriod = $('#create-calperiod').val();
-		const location = $('#create-location').val() || '';
+		const location = $('#create-location').val();
 		const seller = $('#create-seller').val() || '';
 		const servicePartner = $('#create-partner').val() || '';
 		const deviceFunction = $('#create-function').val() || '';
 		const comment = $('#create-comment').val() || '';
-		if (!id || !name || !serialNo || calibrationPeriod <= 0) {
+		if (!id || !name || !serialNo || calibrationPeriod <= 0 || categoryId == 0 || location == 0) {
 			$('#create-device-error').text('Invalid field(s)');
 			return;
 		}
-		const basedata = { id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment };
+		const basedata = {
+			id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
+			categoryId, 'Category.name': categoryName
+		};
 		await self.props.dispatch(createDevice(basedata));
 		$('#modal-create-device input').val('');
 		$('#modal-create-device textarea').val('');
-		$('#modal-create-device select').val('0');
+		$('#modal-create-device select').val('');
 		$('#create-device-error').text('');
 		$('#modal-create-device').modal('hide');
-		const newdevice = self.props.device.list[0];
-		const table = $('#table-device').DataTable();
-		table.row.add(newdevice).draw();
 	}
 
 	render() {
+		const listCategory = this.props.category.list;
+		let optionCategory = {};
+		listCategory.forEach((item) => {
+			optionCategory[item.name] = item.name;
+		});
+		let optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
+		const listDevice = this.props.device.list;
 		return (
 			<main id="main-container">
 				<div className="bg-body-light">
@@ -102,15 +92,16 @@ export default class Device extends Component {
 														<input type="text" className="form-control" id="create-name" />
 													</div>
 													<div className="form-group col-sm-3">
-														<label htmlFor="create-category">Category</label>
+														<label htmlFor="create-category">Category*</label>
 														<select className="form-control" id="create-category">
-															<option value="0">Please select</option>
-															<option value="1">Turbine</option>
-															<option value="2">Rotor</option>
+															<option value='0'>Please select</option>
+															{listCategory.map((item) => (
+																<option key={item.id} value={item.id}>{item.name}</option>
+															))}
 														</select>
 													</div>
 													<div className="form-group col-sm-3">
-														<label htmlFor="create-serialno">Serial Number</label>
+														<label htmlFor="create-serialno">Serial Number*</label>
 														<input type="text" className="form-control" id="create-serialno" />
 													</div>
 													<div className="form-group col-sm-12">
@@ -118,15 +109,15 @@ export default class Device extends Component {
 														<textarea className="form-control" id="create-description" />
 													</div>
 													<div className="form-group col-sm-3">
-														<label htmlFor="create-calperiod">Calibration Period</label>
+														<label htmlFor="create-calperiod">Calibration Period*</label>
 														<input type="number" className="form-control" id="create-calperiod" />
 													</div>
 													<div className="form-group col-sm-3">
-														<label htmlFor="create-location">Location</label>
+														<label htmlFor="create-location">Location*</label>
 														<select className="form-control" id="create-location">
 															<option value="0">Please select</option>
-															<option value="1">Lappeenranta</option>
-															<option value="2">Vaasa</option>
+															<option value="Lappeenranta">Lappeenranta</option>
+															<option value="Vaasa">Vaasa</option>
 														</select>
 													</div>
 													<div className="form-group col-sm-3">
@@ -145,9 +136,9 @@ export default class Device extends Component {
 														<label htmlFor="create-function">Function</label>
 														<input type="text" className="form-control" id="create-function" />
 													</div>
-													<div className="form-group col-sm-12">
+													<div className="form-group col-sm-6">
 														<label htmlFor="create-comment">Comment</label>
-														<textarea className="form-control" id="comment" />
+														<input type="text" className="form-control" id="comment" />
 													</div>
 												</div>
 											</div>
@@ -160,26 +151,21 @@ export default class Device extends Component {
 									</div>
 								</div>
 							</div>
-							<div className="table-responsive">
-								<table className="table table-bordered table-striped table-vcenter" id="table-device">
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>Device name</th>
-											<th>Description</th>
-											<th>S/N</th>
-											<th>Cal. period</th>
-											<th>Location</th>
-											<th>Seller</th>
-											<th>Service partner</th>
-											<th>Function</th>
-											<th>Comments</th>
-										</tr>
-									</thead>
-									<tbody>
-									</tbody>
-								</table>
-							</div>
+							<BootstrapTable keyField="id" data={listDevice} id="table-device" version='4' pagination search>
+								<TableHeaderColumn dataField='id' dataSort>ID</TableHeaderColumn>
+								<TableHeaderColumn dataField='name'>Device Name</TableHeaderColumn>
+								<TableHeaderColumn dataField='Category.name' dataSort
+									filter={{ type: 'SelectFilter', options: optionCategory }}>Category</TableHeaderColumn>
+								<TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
+								<TableHeaderColumn dataField='serialNo'>S/N</TableHeaderColumn>
+								<TableHeaderColumn dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>
+								<TableHeaderColumn dataField='location' dataSort
+									filter={{ type: 'SelectFilter', options: optionLocation }}>Location</TableHeaderColumn>
+								<TableHeaderColumn dataField='seller'>Seller</TableHeaderColumn>
+								<TableHeaderColumn dataField='servicePartner'>Service Partner</TableHeaderColumn>
+								<TableHeaderColumn dataField='deviceFunction'>Function</TableHeaderColumn>
+								<TableHeaderColumn dataField='comment'>Comment</TableHeaderColumn>
+							</BootstrapTable>
 						</div>
 					</div>
 				</div>

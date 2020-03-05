@@ -27,7 +27,7 @@ export default class Home extends Component {
 							<div className="row">
 								{list.map((item) =>
 									(<div className="col-md-2 text-center" key={item.id} style={{ cursor: 'pointer' }}>
-										<img src="https://cdn.onlinewebfonts.com/svg/img_537115.png" alt="" style={{ maxWidth: '100%' }} />
+										<img src='https://cdn.onlinewebfonts.com/svg/img_191639.png' alt="" style={{ maxWidth: '100%' }} />
 										<h4>{item.name}</h4>
 									</div>))
 								}
