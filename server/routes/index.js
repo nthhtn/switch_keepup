@@ -1,15 +1,18 @@
 import path from 'path';
+import { isLoggedIn } from '../helpers/middleware';
 
 module.exports = (app) => {
 
 	require('./guest')(app);
 
+	app.use('/api', isLoggedIn);
 	require('./device')(app);
 	require('./category')(app);
 
 	app.route('/logout')
 		.get((req, res) => {
-			return req.session.destroy(() => res.sendFile(path.resolve(`${__dirname}/../views/guest.html`)));
+			if (req.isAuthenticated()) { req.logOut(); }
+			return res.sendFile(path.resolve(`${__dirname}/../views/guest.html`));
 		});
 
 	app.route('*')
