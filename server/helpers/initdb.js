@@ -1,4 +1,5 @@
-import { Category, Device } from '../models';
+import { Category, Device, User } from '../models';
+import { hashPassword, generateSalt } from './password';
 
 module.exports = async () => {
 	const categories = await Category.findAll({ raw: true });
@@ -32,5 +33,19 @@ module.exports = async () => {
 			};
 		});
 		await Device.bulkCreate(listDevice);
+	}
+	const users = await User.findAll({ raw: true });
+	if (users.length === 0) {
+		const listUser = [1, 2, 3, 4].map((item) => {
+			let test_user = {
+				email: `test${item}@gmail.com`,
+				salt: generateSalt(),
+				fullname: 'Test User',
+				userType: 'manager'
+			};
+			test_user.password = hashPassword('123456', test_user.salt);
+			return test_user;
+		});
+		await User.bulkCreate(listUser);
 	}
 };

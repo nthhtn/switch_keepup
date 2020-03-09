@@ -5,6 +5,7 @@ module.exports = {
 	cache: true,
 	mode: 'development',
 	entry: {
+		'guest': ['./client/Guest/index', 'webpack-hot-middleware/client'],
 		'user': ['./client/User/index', 'webpack-hot-middleware/client']
 	},
 	output: {
