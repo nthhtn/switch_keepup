@@ -1,41 +1,5 @@
 import React, { Component } from 'react';
-
-class UserItem extends Component {
-
-	constructor(props) {
-		super(props);
-		this.state = {};
-	}
-
-	render() {
-		return (
-			<tr>
-				<td>{this.props.username}</td>
-				<td>{this.props.email}</td>
-				<td>{this.props.fullname}</td>
-				<td>
-				{
-					this.props.role === 'Manager' ?
-						<span class="badge badge-success">{this.props.role}</span> : <span class="badge badge-danger">{this.props.role}</span>
-				}
-				</td>
-				<td className="text-center">
-					<div className="btn-group">
-						<button type="button"
-							className="btn btn-sm btn-primary js-tooltip-enabled" data-toggle="tooltip" title="" data-original-title="Edit">
-							<i className="fa fa-fw fa-pencil-alt"></i>
-						</button>
-						<button type="button"
-							className="btn btn-sm btn-primary js-tooltip-enabled" data-toggle="tooltip" title="" data-original-title="Delete">
-							<i className="fa fa-fw fa-times"></i>
-						</button>
-					</div>
-				</td>
-			</tr>
-		);
-	}
-
-}
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 export default class User extends Component {
 
@@ -45,7 +9,8 @@ export default class User extends Component {
 	}
 
 	render() {
-		let list = new Array(4).fill({}).map((item, i) => ({
+		let listUser = new Array(4).fill({}).map((item, i) => ({
+			id: i,
 			username: 'User ' + i,
 			email: 'testuser' + i + '@gmail.com',
 			fullname: 'User ' + i,
@@ -66,24 +31,11 @@ export default class User extends Component {
 							<button type="button" className="btn btn-success mr-1 mb-3">
 								<i className="fa fa-fw fa-plus mr-1"></i> Add a user
 							</button>
-							<div className="table-responsive">
-								<table className="table table-bordered table-striped table-vcenter">
-									<thead>
-										<tr>
-											<th>Username</th>
-											<th>Email</th>
-											<th>Full name</th>
-											<th>Role</th>
-											<th className="text-center">Actions</th>
-										</tr>
-									</thead>
-									<tbody>
-										{list.map((user, i) =>
-											<UserItem key={`user-${i}`} {...user} />
-										)}
-									</tbody>
-								</table>
-							</div>
+							<BootstrapTable data={listUser} id="table-user" version='4' search>
+								<TableHeaderColumn dataField='id' isKey>ID</TableHeaderColumn>
+								<TableHeaderColumn dataField='email'>Email</TableHeaderColumn>
+								<TableHeaderColumn dataField='fullname'>Full Name</TableHeaderColumn>
+							</BootstrapTable>
 						</div>
 					</div>
 				</div>

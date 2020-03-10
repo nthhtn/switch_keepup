@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-import { createDevice, listDevice, deleteManyDevices } from '../actions/Device';
+import { createDevice, listDevice, updateDevice, deleteManyDevices } from '../actions/Device';
 
 let self;
 
@@ -49,10 +49,13 @@ export default class Device extends Component {
 	}
 
 	async updateDevice(row, cellName, cellValue) {
-		console.log(row);
-		console.log(cellName);
-		console.log(cellValue);
-		if (cellName === 'Category.name') { return false; }
+		let data = {};
+		if (cellName === 'Category.name') {
+			const categoryId = self.props.category.list.find((item) => item.name === cellValue).id;
+			data.categoryId = categoryId;
+		}
+		data[cellName] = cellValue;
+		await self.props.dispatch(updateDevice(row.id, data));
 		return true;
 	}
 

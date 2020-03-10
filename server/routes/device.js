@@ -36,6 +36,7 @@ module.exports = (app) => {
 
 	router.route('/:id')
 		.put(async (req, res) => {
+			const { id } = req.params;
 			try {
 				await Device.update(req.body, { where: { id } });
 				return res.json({ success: true });
