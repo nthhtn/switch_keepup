@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 let self;
 
@@ -26,9 +27,11 @@ export default class Home extends Component {
 						<div className="block-content">
 							<div className="row">
 								{list.map((item) =>
-									(<div className="col-md-2 text-center" key={item.id} style={{ cursor: 'pointer' }}>
+									(<div className="col-md-2 text-center" key={item.id}>
 										<img src='https://cdn.onlinewebfonts.com/svg/img_191639.png' alt="" style={{ maxWidth: '100%' }} />
-										<h4>{item.name}</h4>
+										<Link to={{ pathname: '/dashboard/devices', state: { categoryName: item.name } }}>
+											<h4>{item.name}</h4>
+										</Link>
 									</div>))
 								}
 							</div>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-import { createDevice, listDevice } from '../actions/Device';
+import { createDevice, listDevice, deleteManyDevices } from '../actions/Device';
 
 let self;
 
@@ -9,7 +9,9 @@ export default class Device extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			defaultCategory: props.location.state ? props.location.state.categoryName : null
+		};
 		self = this;
 	}
 
@@ -46,14 +48,32 @@ export default class Device extends Component {
 		$('#modal-create-device').modal('hide');
 	}
 
+	async updateDevice(row, cellName, cellValue) {
+		console.log(row);
+		console.log(cellName);
+		console.log(cellValue);
+		if (cellName === 'Category.name') { return false; }
+		return true;
+	}
+
+	async deleteManyDevices(next, rowKeys) {
+		const rowKeysStr = rowKeys.join(', ');
+		if (confirm(`Are you sure you want to delete ${rowKeysStr}?`)) {
+			await self.props.dispatch(deleteManyDevices({ id: rowKeys }));
+			next();
+		}
+	}
+
 	render() {
 		const listCategory = this.props.category.list;
 		let optionCategory = {};
-		listCategory.forEach((item) => {
-			optionCategory[item.name] = item.name;
-		});
+		listCategory.forEach((item) => { optionCategory[item.name] = item.name; });
+		const editableCategory = listCategory.map((item) => (item.name));
+		const { defaultCategory } = this.state;
 		let optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
 		const listDevice = this.props.device.list;
+		const cellEditProp = { mode: 'click', blurToSave: true, beforeSaveCell: this.updateDevice };
+		const tableOptions = { handleConfirmDeleteRow: this.deleteManyDevices };
 		return (
 			<main id="main-container">
 				<div className="bg-body-light">
@@ -151,20 +171,107 @@ export default class Device extends Component {
 									</div>
 								</div>
 							</div>
-							<BootstrapTable keyField="id" data={listDevice} id="table-device" version='4' pagination search>
-								<TableHeaderColumn dataField='id' dataSort>ID</TableHeaderColumn>
-								<TableHeaderColumn dataField='name'>Device Name</TableHeaderColumn>
-								<TableHeaderColumn dataField='Category.name' dataSort
-									filter={{ type: 'SelectFilter', options: optionCategory }}>Category</TableHeaderColumn>
-								<TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
-								<TableHeaderColumn dataField='serialNo'>S/N</TableHeaderColumn>
-								<TableHeaderColumn dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>
-								<TableHeaderColumn dataField='location' dataSort
-									filter={{ type: 'SelectFilter', options: optionLocation }}>Location</TableHeaderColumn>
-								<TableHeaderColumn dataField='seller'>Seller</TableHeaderColumn>
-								<TableHeaderColumn dataField='servicePartner'>Service Partner</TableHeaderColumn>
-								<TableHeaderColumn dataField='deviceFunction'>Function</TableHeaderColumn>
-								<TableHeaderColumn dataField='comment'>Comment</TableHeaderColumn>
+							<div className="modal fade" id="modal-update-device" tabIndex="-1" role="dialog" aria-labelledby="modal-update-device" aria-modal="true" style={{ paddingRight: '15px' }}>
+								<div className="modal-dialog modal-xl" role="document">
+									<div className="modal-content">
+										<div className="block block-themed block-transparent mb-0">
+											<div className="block-header bg-primary-dark">
+												<h3 className="block-title">Add device</h3>
+												<div className="block-options">
+													<button type="button" className="btn-block-option" data-dismiss="modal" aria-label="Close">
+														<i className="fa fa-fw fa-times"></i>
+													</button>
+												</div>
+											</div>
+											<div className="block-content font-size-sm">
+												<div className="row">
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-id">Device ID*</label>
+														<input type="text" className="form-control" id="update-id" disabled />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-name">Device name*</label>
+														<input type="text" className="form-control" id="update-name" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-category">Category*</label>
+														<select className="form-control" id="update-category">
+															<option value='0'>Please select</option>
+															{listCategory.map((item) => (
+																<option key={item.id} value={item.id}>{item.name}</option>
+															))}
+														</select>
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-serialno">Serial Number*</label>
+														<input type="text" className="form-control" id="update-serialno" />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="update-description">Description</label>
+														<textarea className="form-control" id="update-description" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-calperiod">Calibration Period*</label>
+														<input type="number" className="form-control" id="update-calperiod" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-location">Location*</label>
+														<select className="form-control" id="update-location">
+															<option value="0">Please select</option>
+															<option value="Lappeenranta">Lappeenranta</option>
+															<option value="Vaasa">Vaasa</option>
+														</select>
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-department">Department</label>
+														<input type="text" className="form-control" id="update-department" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-seller">Seller</label>
+														<input type="text" className="form-control" id="update-seller" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-partner">Service Partner</label>
+														<input type="text" className="form-control" id="update-partner" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-function">Function</label>
+														<input type="text" className="form-control" id="update-function" />
+													</div>
+													<div className="form-group col-sm-6">
+														<label htmlFor="update-comment">Comment</label>
+														<input type="text" className="form-control" id="comment" />
+													</div>
+												</div>
+											</div>
+											<label id='update-device-error' style={{ color: 'red', padding: '20px' }}></label>
+											<div className="block-content block-content-full text-right border-top">
+												<button type="button" className="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+												<button type="button" className="btn btn-sm btn-primary" onClick={this.createDevice}><i className="fa fa-check mr-1"></i>Ok</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<BootstrapTable data={listDevice} id="table-device" version='4' pagination search
+								cellEdit={cellEditProp} deleteRow selectRow={{ mode: 'checkbox' }}
+								options={tableOptions}>
+								<TableHeaderColumn width='150px' dataField='id' isKey dataSort>ID</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='name'>Device Name</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='Category.name' dataSort
+									filter={{ type: 'SelectFilter', options: optionCategory, defaultValue: defaultCategory }}
+									editable={{ type: 'select', options: { values: editableCategory } }}>Category</TableHeaderColumn>
+								<TableHeaderColumn width='200px' dataField='createdAt' editable={false} dataSort>Added at</TableHeaderColumn>
+								<TableHeaderColumn width='300px' dataField='description'>Description</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='serialNo'>S/N</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='location' dataSort
+									filter={{ type: 'SelectFilter', options: optionLocation }}
+									editable={{ type: 'select', options: { values: ['Lappeenranta', 'Vaasa'] } }}>Location</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='seller'>Seller</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='servicePartner'>Service Partner</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='deviceFunction'>Function</TableHeaderColumn>
+								<TableHeaderColumn width='150px' dataField='comment'>Comment</TableHeaderColumn>
 							</BootstrapTable>
 						</div>
 					</div>

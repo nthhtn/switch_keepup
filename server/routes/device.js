@@ -24,6 +24,24 @@ module.exports = (app) => {
 			} catch (error) {
 				return res.json({ success: false, error: error.message });
 			}
+		})
+		.delete(async (req, res) => {
+			try {
+				await Device.destroy({ where: req.body });
+				return res.json({ success: true });
+			} catch (error) {
+				return res.json({ success: false, error: error.message });
+			}
+		});
+
+	router.route('/:id')
+		.put(async (req, res) => {
+			try {
+				await Device.update(req.body, { where: { id } });
+				return res.json({ success: true });
+			} catch (error) {
+				return res.json({ success: false, error: error.message });
+			}
 		});
 
 	app.use('/api/devices', router);

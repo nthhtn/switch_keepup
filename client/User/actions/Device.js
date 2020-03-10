@@ -44,17 +44,19 @@ export function updateDeviceSuccess(id, data) {
 	return { type: 'UPDATE_DEVICE', id, data };
 }
 
-export function deleteDevice(id) {
+export function deleteManyDevices(filter) {
 	return async (dispatch) => {
-		const response = await fetch(`/api/devices/${id}`, {
+		const response = await fetch(`/api/devices`, {
 			credentials: 'same-origin',
-			method: 'delete'
+			method: 'delete',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(filter)
 		});
 		const responseJson = await response.json();
-		dispatch(deleteDeviceSuccess(id));
+		dispatch(deleteManyDevicesSuccess(filter));
 	};
 }
 
-export function deleteDeviceSuccess(id) {
-	return { type: 'DELETE_DEVICE', id };
+export function deleteManyDevicesSuccess(filter) {
+	return { type: 'DELETE_MANY_DEVICES', filter };
 }

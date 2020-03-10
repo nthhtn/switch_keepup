@@ -11,6 +11,7 @@ const options = {
 		min: 0,
 		idle: 10000
 	},
+	logging: false
 };
 const sequelize = new Sequelize(name, user, password, options);
 const basename = path.basename(__filename);
