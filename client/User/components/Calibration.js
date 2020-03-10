@@ -15,7 +15,7 @@ class CalibrationItem extends Component {
 				<td>
 					{
 						this.props.status === 'Completed' ?
-							<span class="badge badge-success">{this.props.status}</span> : <span class="badge badge-primary">{this.props.status}</span>
+							<span className="badge badge-success">{this.props.status}</span> : <span className="badge badge-primary">{this.props.status}</span>
 					}
 				</td>
 				<td>{this.props.document}</td>
