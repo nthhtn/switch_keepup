@@ -8,6 +8,7 @@ module.exports = (app) => {
 	app.use('/api', isLoggedIn);
 	require('./device')(app);
 	require('./category')(app);
+	require('./user')(app);
 
 	app.route('/logout')
 		.get((req, res) => {

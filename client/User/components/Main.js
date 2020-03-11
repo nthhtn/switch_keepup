@@ -24,8 +24,10 @@ class Main extends Component {
 					render={(props) => <Device {...this.props} {...props} />} />
 				<Route exact path='/dashboard/calibrations' component={Calibration} />
 				<Route exact path='/dashboard/departments' component={Department} />
-				<Route exact path='/dashboard/users' component={User} />
-				<Route path='*' component={Home} />
+				<Route exact path='/dashboard/users'
+					render={() => <User {...this.props} />} />
+				<Route path='*'
+					render={() => <Home {...this.props} />} />
 			</Switch>
 		);
 	}

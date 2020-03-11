@@ -36,12 +36,12 @@ module.exports = async () => {
 	}
 	const users = await User.findAll({ raw: true });
 	if (users.length === 0) {
-		const listUser = [1, 2, 3, 4].map((item) => {
+		const listUser = [1, 2, 3, 4].map((item, i) => {
 			let test_user = {
 				email: `test${item}@gmail.com`,
 				salt: generateSalt(),
 				fullname: 'Test User',
-				userType: 'manager'
+				role: i % 2 === 0 ? 'manager' : 'engineer'
 			};
 			test_user.password = hashPassword('123456', test_user.salt);
 			return test_user;

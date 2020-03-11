@@ -73,7 +73,7 @@ export default class Device extends Component {
 		listCategory.forEach((item) => { optionCategory[item.name] = item.name; });
 		const editableCategory = listCategory.map((item) => (item.name));
 		const { defaultCategory } = this.state;
-		let optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
+		const optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
 		const listDevice = this.props.device.list;
 		const cellEditProp = { mode: 'click', blurToSave: true, beforeSaveCell: this.updateDevice };
 		const createCustomInsertButton = (onClick) => {
@@ -96,7 +96,6 @@ export default class Device extends Component {
 				<div className="content">
 					<div className="block">
 						<div className="block-content">
-
 							<div className="modal fade" id="modal-create-device" tabIndex="-1" role="dialog" aria-labelledby="modal-create-device" aria-modal="true" style={{ paddingRight: '15px' }}>
 								<div className="modal-dialog modal-xl" role="document">
 									<div className="modal-content">
