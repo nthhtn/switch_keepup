@@ -1,3 +1,7 @@
+function handleError(error) {
+	return { type: 'USER_ERROR', errorMessage: error };
+};
+
 export function createUser(user) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/users`, {
@@ -7,7 +11,7 @@ export function createUser(user) {
 			body: JSON.stringify(user)
 		});
 		const responseJson = await response.json();
-		dispatch(createUserSuccess(responseJson.result));
+		return responseJson.success ? dispatch(createUserSuccess(responseJson.result)) : dispatch(handleError(responseJson.error));
 	};
 };
 

@@ -27,6 +27,10 @@ export default class User extends Component {
 		}
 		const basedata = { email, fullname, role };
 		await self.props.dispatch(createUser(basedata));
+		if (self.props.user.errorMessage) {
+			$('#create-user-error').text(self.props.user.errorMessage);
+			return;
+		}
 		$('#modal-create-user input').val('');
 		$('#modal-create-user select').val('');
 		$('#create-user-error').text('');

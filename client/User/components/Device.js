@@ -41,6 +41,10 @@ export default class Device extends Component {
 			categoryId, 'Category.name': categoryName
 		};
 		await self.props.dispatch(createDevice(basedata));
+		if (self.props.device.errorMessage) {
+			$('#create-device-error').text(self.props.device.errorMessage);
+			return;
+		}
 		$('#modal-create-device input').val('');
 		$('#modal-create-device textarea').val('');
 		$('#modal-create-device select').val('');

@@ -15,7 +15,7 @@ module.exports = (app) => {
 				const result = await User.create({ ...req.body, salt, password: hashedPassword });
 				return res.json({ success: true, result });
 			} catch (error) {
-				return res.json({ success: false, error: error.message });
+				return res.json({ success: false, error: error.errors[0].message });
 			}
 		})
 		.get(async (req, res) => {

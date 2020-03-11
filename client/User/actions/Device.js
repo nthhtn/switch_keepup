@@ -1,3 +1,7 @@
+function handleError(error) {
+	return { type: 'DEVICE_ERROR', errorMessage: error };
+};
+
 export function createDevice(device) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/devices`, {
@@ -7,7 +11,7 @@ export function createDevice(device) {
 			body: JSON.stringify(device)
 		});
 		const responseJson = await response.json();
-		dispatch(createDeviceSuccess(responseJson.result));
+		return responseJson.success ? dispatch(createDeviceSuccess(responseJson.result)) : dispatch(handleError(responseJson.error));
 	};
 };
 
