@@ -93,9 +93,7 @@ export default class Device extends Component {
 
 	showUpdateModal(row) {
 		$('#modal-update-device').modal('show');
-		console.log(row);
-		const { id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
-			categoryId } = row;
+		const { id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment, categoryId } = row;
 		$('#update-id').val(id);
 		$('#update-name').val(name);
 		$('#update-category').val(categoryId);
