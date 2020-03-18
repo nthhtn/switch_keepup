@@ -9,9 +9,7 @@ export default class Device extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {
-			defaultCategory: props.location.state ? props.location.state.categoryName : null
-		};
+		this.state = { defaultCategory: props.location.state ? props.location.state.categoryName : null };
 		self = this;
 	}
 
@@ -52,15 +50,37 @@ export default class Device extends Component {
 		$('#modal-create-device').modal('hide');
 	}
 
-	async updateDevice(row, cellName, cellValue) {
-		let data = {};
-		if (cellName === 'Category.name') {
-			const categoryId = self.props.category.list.find((item) => item.name === cellValue).id;
-			data.categoryId = categoryId;
+	async updateDevice() {
+		const id = $('#update-id').val();
+		const name = $('#update-name').val();
+		const categoryId = $('#update-category').val();
+		const categoryName = $('#update-category option:selected').text();
+		const description = $('#update-description').val() || '';
+		const serialNo = $('#update-serialno').val();
+		const calibrationPeriod = $('#update-calperiod').val();
+		const location = $('#update-location').val();
+		const seller = $('#update-seller').val() || '';
+		const servicePartner = $('#update-partner').val() || '';
+		const deviceFunction = $('#update-function').val() || '';
+		const comment = $('#update-comment').val() || '';
+		if (!id || !name || !serialNo || calibrationPeriod <= 0 || categoryId == 0 || location == 0) {
+			$('#update-device-error').text('Invalid field(s)');
+			return;
 		}
-		data[cellName] = cellValue;
-		await self.props.dispatch(updateDevice(row.id, data));
-		return true;
+		const basedata = {
+			name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
+			categoryId, 'Category.name': categoryName
+		};
+		await self.props.dispatch(updateDevice(id, basedata));
+		if (self.props.device.errorMessage) {
+			$('#update-device-error').text(self.props.device.errorMessage);
+			return;
+		}
+		$('#modal-update-device input').val('');
+		$('#modal-update-device textarea').val('');
+		$('#modal-update-device select').val('');
+		$('#update-device-error').text('');
+		$('#modal-update-device').modal('hide');
 	}
 
 	async deleteManyDevices(next, rowKeys) {
@@ -71,15 +91,31 @@ export default class Device extends Component {
 		}
 	}
 
+	showUpdateModal(row) {
+		$('#modal-update-device').modal('show');
+		console.log(row);
+		const { id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
+			categoryId } = row;
+		$('#update-id').val(id);
+		$('#update-name').val(name);
+		$('#update-category').val(categoryId);
+		$('#update-description').val(description);
+		$('#update-serialno').val(serialNo);
+		$('#update-calperiod').val(calibrationPeriod);
+		$('#update-location').val(location);
+		$('#update-seller').val(seller);
+		$('#update-partner').val(servicePartner);
+		$('#update-function').val(deviceFunction);
+		$('#update-comment').val(comment);
+	}
+
 	render() {
 		const listCategory = this.props.category.list;
 		let optionCategory = {};
 		listCategory.forEach((item) => { optionCategory[item.name] = item.name; });
-		const editableCategory = listCategory.map((item) => (item.name));
 		const { defaultCategory } = this.state;
 		const optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
 		const listDevice = this.props.device.list;
-		const cellEditProp = { mode: 'click', blurToSave: true, beforeSaveCell: this.updateDevice };
 		const createCustomInsertButton = (onClick) => {
 			return (
 				<button type="button" className="btn btn-success" data-toggle="modal" data-target="#modal-create-device">
@@ -87,7 +123,11 @@ export default class Device extends Component {
 				</button>
 			)
 		}
-		const tableOptions = { insertBtn: createCustomInsertButton, handleConfirmDeleteRow: this.deleteManyDevices };
+		const tableOptions = {
+			insertBtn: createCustomInsertButton,
+			handleConfirmDeleteRow: this.deleteManyDevices,
+			onRowClick: this.showUpdateModal
+		};
 		return (
 			<main id="main-container">
 				<div className="bg-body-light">
@@ -182,21 +222,103 @@ export default class Device extends Component {
 									</div>
 								</div>
 							</div>
+							<div className="modal fade" id="modal-update-device" tabIndex="-1" role="dialog" aria-labelledby="modal-update-device" aria-modal="true" style={{ paddingRight: '15px' }}>
+								<div className="modal-dialog modal-xl" role="document">
+									<div className="modal-content">
+										<div className="block block-themed block-transparent mb-0">
+											<div className="block-header bg-primary-dark">
+												<h3 className="block-title">Edit device</h3>
+												<div className="block-options">
+													<button type="button" className="btn-block-option" data-dismiss="modal" aria-label="Close">
+														<i className="fa fa-fw fa-times"></i>
+													</button>
+												</div>
+											</div>
+											<div className="block-content font-size-sm">
+												<div className="row">
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-id">Device ID*</label>
+														<input type="text" className="form-control" id="update-id" placeholder="ID cannot be changed" disabled />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-name">Device name*</label>
+														<input type="text" className="form-control" id="update-name" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-category">Category*</label>
+														<select className="form-control" id="update-category">
+															<option value='0'>Please select</option>
+															{listCategory.map((item) => (
+																<option key={item.id} value={item.id}>{item.name}</option>
+															))}
+														</select>
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-serialno">Serial Number*</label>
+														<input type="text" className="form-control" id="update-serialno" />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="update-description">Description</label>
+														<textarea className="form-control" id="update-description" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-calperiod">Calibration Period*</label>
+														<input type="number" className="form-control" id="update-calperiod" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-location">Location*</label>
+														<select className="form-control" id="update-location">
+															<option value="0">Please select</option>
+															<option value="Lappeenranta">Lappeenranta</option>
+															<option value="Vaasa">Vaasa</option>
+														</select>
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-department">Department</label>
+														<input type="text" className="form-control" id="update-department" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-seller">Seller</label>
+														<input type="text" className="form-control" id="update-seller" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-partner">Service Partner</label>
+														<input type="text" className="form-control" id="update-partner" />
+													</div>
+													<div className="form-group col-sm-3">
+														<label htmlFor="update-function">Function</label>
+														<input type="text" className="form-control" id="update-function" />
+													</div>
+													<div className="form-group col-sm-6">
+														<label htmlFor="update-comment">Comment</label>
+														<input type="text" className="form-control" id="comment" />
+													</div>
+												</div>
+											</div>
+											<label id='update-device-error' style={{ color: 'red', padding: '20px' }}></label>
+											<div className="block-content block-content-full text-right border-top">
+												<button type="button" className="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+												<button type="button" className="btn btn-sm btn-primary" onClick={this.updateDevice}><i className="fa fa-check mr-1"></i>Ok</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 							<BootstrapTable data={listDevice} id="table-device" version='4' pagination search
-								cellEdit={cellEditProp} deleteRow selectRow={{ mode: 'checkbox' }}
-								options={tableOptions} insertRow>
+								deleteRow selectRow={{ mode: 'checkbox' }} options={tableOptions} insertRow
+								bodyStyle={{ cursor: 'pointer' }}>
 								<TableHeaderColumn width='150px' dataField='id' isKey dataSort>ID</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='name'>Device Name</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='Category.name' dataSort
 									filter={{ type: 'SelectFilter', options: optionCategory, defaultValue: defaultCategory }}
-									editable={{ type: 'select', options: { values: editableCategory } }}>Category</TableHeaderColumn>
+								>Category</TableHeaderColumn>
 								<TableHeaderColumn width='200px' dataField='createdAt' editable={false} dataSort>Added at</TableHeaderColumn>
 								<TableHeaderColumn width='300px' dataField='description'>Description</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='serialNo'>S/N</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='location' dataSort
 									filter={{ type: 'SelectFilter', options: optionLocation }}
-									editable={{ type: 'select', options: { values: ['Lappeenranta', 'Vaasa'] } }}>Location</TableHeaderColumn>
+								>Location</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='seller'>Seller</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='servicePartner'>Service Partner</TableHeaderColumn>
 								<TableHeaderColumn width='150px' dataField='deviceFunction'>Function</TableHeaderColumn>
