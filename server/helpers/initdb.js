@@ -28,6 +28,7 @@ module.exports = async () => {
 				name: 'Device ' + (i + 1).toString(),
 				serialNo: 'SN' + (i + 1).toString(),
 				calibrationPeriod: 1,
+				status: 'active',
 				location: random % 2 === 0 ? 'Vaasa' : 'Lappeenranta',
 				categoryId: random < 10 ? 'Y0' + random : 'Y' + random
 			};

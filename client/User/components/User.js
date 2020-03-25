@@ -37,11 +37,29 @@ export default class User extends Component {
 		$('#modal-create-user').modal('hide');
 	}
 
-	async updateUser(row, cellName, cellValue) {
-		let data = {};
-		data[cellName] = cellValue;
-		await self.props.dispatch(updateUser(row.id, data));
-		return true;
+	async updateUser() {
+		const id = $('#update-id').val();
+		const email = $('#update-email').val();
+		const fullname = $('#update-fullname').val();
+		const role = $('#update-role').val();
+		await self.props.dispatch(updateUser(id, { fullname, role }));
+		if (!id || !email || !fullname || role == 0) {
+			$('#update-user-error').text('Invalid field(s)');
+			return;
+		}
+		$('#update-user-error').text('');
+		$('#modal-update-user input').val('');
+		$('#modal-update-user select').val('');
+		$('#modal-update-user').modal('hide');
+	}
+
+	showUpdateModal(row) {
+		const { id, email, fullname, role } = row;
+		$('#update-id').val(id);
+		$('#update-email').val(email);
+		$('#update-fullname').val(fullname);
+		$('#update-role').val(role);
+		$('#modal-update-user').modal('show');
 	}
 
 	render() {
@@ -53,8 +71,7 @@ export default class User extends Component {
 				</button>
 			);
 		}
-		const tableOptions = { insertBtn: createCustomInsertButton };
-		const cellEditProp = { mode: 'click', blurToSave: true, beforeSaveCell: this.updateUser };
+		const tableOptions = { insertBtn: createCustomInsertButton, onRowClick: this.showUpdateModal };
 		const roleClassName = (cell, row, rowid, colid) => cell === 'manager' ? 'badge-success' : 'badge-danger';
 		return (
 			<main id="main-container">
@@ -109,12 +126,56 @@ export default class User extends Component {
 									</div>
 								</div>
 							</div>
-							<BootstrapTable data={listUser} id="table-user" version='4' search options={tableOptions} insertRow cellEdit={cellEditProp}>
+							<div className="modal fade" id="modal-update-user" tabIndex="-1" role="dialog" aria-labelledby="modal-update-user" aria-modal="true" style={{ paddingRight: '15px' }}>
+								<div className="modal-dialog modal-md" role="document">
+									<div className="modal-content">
+										<div className="block block-themed block-transparent mb-0">
+											<div className="block-header bg-primary-dark">
+												<h3 className="block-title">Add user</h3>
+												<div className="block-options">
+													<button type="button" className="btn-block-option" data-dismiss="modal" aria-label="Close">
+														<i className="fa fa-fw fa-times"></i>
+													</button>
+												</div>
+											</div>
+											<div className="block-content font-size-sm">
+												<div className="row">
+													<div className="form-group col-sm-12" hidden>
+														<label htmlFor="update-id">ID*</label>
+														<input type="text" className="form-control" id="update-id" disabled />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="update-email">Email*</label>
+														<input type="email" className="form-control" id="update-email" placeholder="Email cannot be changed" disabled />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="update-fullname">Full Name*</label>
+														<input type="text" className="form-control" id="update-fullname" />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="update-role">Role*</label>
+														<select className="form-control" id="update-role">
+															<option value="0">Please select</option>
+															<option value="manager">Manager</option>
+															<option value="engineer">Engineer</option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<label id='update-user-error' style={{ color: 'red', padding: '20px' }}></label>
+											<div className="block-content block-content-full text-right border-top">
+												<button type="button" className="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+												<button type="button" className="btn btn-sm btn-primary" onClick={this.updateUser}><i className="fa fa-check mr-1"></i>Ok</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<BootstrapTable data={listUser} id="table-user" version='4' search options={tableOptions} insertRow bodyStyle={{ cursor: 'pointer' }}>
 								<TableHeaderColumn dataField='id' isKey hidden>ID</TableHeaderColumn>
-								<TableHeaderColumn dataField='email' editable={false}>Email</TableHeaderColumn>
+								<TableHeaderColumn dataField='email' >Email</TableHeaderColumn>
 								<TableHeaderColumn dataField='fullname'>Full Name</TableHeaderColumn>
-								<TableHeaderColumn dataField='role' columnClassName={roleClassName}
-									editable={{ type: 'select', options: { values: ['manager', 'engineer'] } }}>Role</TableHeaderColumn>
+								<TableHeaderColumn dataField='role' columnClassName={roleClassName}>Role</TableHeaderColumn>
 							</BootstrapTable>
 						</div>
 					</div>

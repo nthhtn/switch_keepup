@@ -1,17 +1,17 @@
-function handleError(error) {
-	return { type: 'DEVICE_ERROR', errorMessage: error };
-};
-
-export function createDevice(device) {
+export function createDevice(device, callback) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/devices`, {
 			credentials: 'same-origin',
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(device)
-		});
+		}).catch((error) => callback(error));
 		const responseJson = await response.json();
-		return responseJson.success ? dispatch(createDeviceSuccess(responseJson.result)) : dispatch(handleError(responseJson.error));
+		if (responseJson.success) {
+			dispatch(createDeviceSuccess(responseJson.result));
+			return callback(null);
+		}
+		return callback(new Error(responseJson.error));
 	};
 };
 
@@ -46,6 +46,25 @@ export function updateDevice(id, data) {
 
 export function updateDeviceSuccess(id, data) {
 	return { type: 'UPDATE_DEVICE', id, data };
+}
+
+
+
+export function updateManyDevices(filter, data) {
+	return async (dispatch) => {
+		const response = await fetch(`/api/devices`, {
+			credentials: 'same-origin',
+			method: 'put',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ filter, data })
+		});
+		const responseJson = await response.json();
+		dispatch(updateManyDevicesSuccess(filter, data));
+	};
+}
+
+export function updateManyDevicesSuccess(filter, data) {
+	return { type: 'UPDATE_MANY_DEVICES', filter, data };
 }
 
 export function deleteManyDevices(filter) {
