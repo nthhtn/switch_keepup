@@ -41,7 +41,7 @@ export default class Device extends Component {
 		}
 		const basedata = {
 			id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
-			categoryId, 'Category.name': categoryName
+			categoryId, 'Category.name': categoryName, status: 'active'
 		};
 		self.props.dispatch(createDevice(basedata, (error) => {
 			if (error) {
