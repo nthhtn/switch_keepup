@@ -11,10 +11,7 @@ export default class Device extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {
-			defaultCategory: props.location.state ? props.location.state.categoryName : null,
-			selectToRestore: []
-		};
+		this.state = { defaultCategory: props.location.state ? props.location.state.categoryName : null };
 		self = this;
 	}
 
@@ -100,6 +97,7 @@ export default class Device extends Component {
 				const filter = { id: rowKeys };
 				const data = { status: 'removed' };
 				await self.props.dispatch(updateManyDevices(filter, data));
+				self.refs.activeTable.cleanSelected();
 			}
 		});
 	}
@@ -117,13 +115,15 @@ export default class Device extends Component {
 		}).then(async (result) => {
 			if (result.value) {
 				await self.props.dispatch(deleteManyDevices({ id: rowKeys }));
-				self.setState({ ...self.state, selectToRestore: [] });
+				self.refs.removedTable.cleanSelected();
 			}
 		});
 	}
 
 	async restoreManyDevices() {
-		const listStr = self.state.selectToRestore.map((key) => `<li><strong>${key}</strong></li>`).join('');
+		const rowKeys = self.refs.removedTable.state.selectedRowKeys;
+		if (rowKeys.length === 0) { return; }
+		const listStr = rowKeys.map((key) => `<li><strong>${key}</strong></li>`).join('');
 		swal.fire({
 			title: 'Are you sure?',
 			html: `These devices will be restored:<ul style="list-style:none;padding:0;">${listStr}</ul>`,
@@ -134,17 +134,12 @@ export default class Device extends Component {
 			confirmButtonText: 'Yes, restore!'
 		}).then(async (result) => {
 			if (result.value) {
-				const filter = { id: self.state.selectToRestore };
+				const filter = { id: rowKeys };
 				const data = { status: 'active' };
 				await self.props.dispatch(updateManyDevices(filter, data));
-				self.setState({ ...self.state, selectToRestore: [] });
+				self.refs.removedTable.cleanSelected();
 			}
 		});
-	}
-
-	handleSelectToRestore(row, isSelected, e) {
-		const selected = isSelected ? [...self.state.selectToRestore, row.id] : self.state.selectToRestore.filter((id) => id !== row.id);
-		self.setState({ ...self.state, selectToRestore: selected });
 	}
 
 	showUpdateModal(row) {
@@ -213,10 +208,6 @@ export default class Device extends Component {
 			deleteBtn: createCustomDeleteButton,
 			handleConfirmDeleteRow: this.deleteManyDevices
 		};
-		const selectRemove = {
-			mode: 'checkbox',
-			onSelect: this.handleSelectToRestore
-		}
 		return (
 			<main id="main-container">
 				<div className="bg-body-light">
@@ -397,7 +388,7 @@ export default class Device extends Component {
 								<TabPane className="block-content">
 									<BootstrapTable data={listActive} id="table-device-active" version='4' pagination search
 										deleteRow selectRow={{ mode: 'checkbox' }} options={tableActiveOptions} insertRow
-										bodyStyle={{ cursor: 'pointer' }}>
+										bodyStyle={{ cursor: 'pointer' }} ref="activeTable">
 										<TableHeaderColumn width='150px' dataField='id' isKey dataSort>ID</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='name'>Device Name</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='Category.name' dataSort
@@ -420,8 +411,8 @@ export default class Device extends Component {
 							<Tab eventKey="table-removed" title="Removed and lost">
 								<TabPane className="block-content">
 									<BootstrapTable data={listRemoved} id="table-device-removed" version='4' pagination search
-										deleteRow selectRow={selectRemove} options={tableRemovedOptions}
-										bodyStyle={{ cursor: 'pointer' }}>
+										selectRow={{ mode: 'checkbox' }} deleteRow options={tableRemovedOptions}
+										bodyStyle={{ cursor: 'pointer' }} ref="removedTable">
 										<TableHeaderColumn width='150px' dataField='id' isKey dataSort>ID</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='name'>Device Name</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='Category.name' dataSort
