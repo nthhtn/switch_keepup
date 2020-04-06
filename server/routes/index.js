@@ -9,6 +9,7 @@ module.exports = (app) => {
 	require('./device')(app);
 	require('./category')(app);
 	require('./user')(app);
+	require('./department')(app);
 
 	app.route('/logout')
 		.get((req, res) => {

@@ -131,7 +131,7 @@ export default class User extends Component {
 									<div className="modal-content">
 										<div className="block block-themed block-transparent mb-0">
 											<div className="block-header bg-primary-dark">
-												<h3 className="block-title">Add user</h3>
+												<h3 className="block-title">Edit user</h3>
 												<div className="block-options">
 													<button type="button" className="btn-block-option" data-dismiss="modal" aria-label="Close">
 														<i className="fa fa-fw fa-times"></i>
