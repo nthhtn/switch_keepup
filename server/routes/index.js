@@ -10,6 +10,7 @@ module.exports = (app) => {
 	require('./category')(app);
 	require('./user')(app);
 	require('./department')(app);
+	require('./calibration')(app);
 
 	app.route('/logout')
 		.get((req, res) => {

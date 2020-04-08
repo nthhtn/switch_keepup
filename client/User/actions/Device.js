@@ -48,8 +48,6 @@ export function updateDeviceSuccess(id, data) {
 	return { type: 'UPDATE_DEVICE', id, data };
 }
 
-
-
 export function updateManyDevices(filter, data) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/devices`, {

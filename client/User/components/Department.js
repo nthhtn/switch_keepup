@@ -41,11 +41,11 @@ export default class Department extends Component {
 		const id = $('#update-id').val();
 		const name = $('#update-name').val();
 		const description = $('#update-description').val() || '';
-		await self.props.dispatch(updateDepartment(id, { name, description }));
 		if (!id || !name) {
 			$('#update-department-error').text('Department name must not be empty');
 			return;
 		}
+		await self.props.dispatch(updateDepartment(id, { name, description }));
 		$('#update-department-error').text('');
 		$('#modal-update-department input').val('');
 		$('#modal-update-department textarea').val('');

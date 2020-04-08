@@ -42,11 +42,11 @@ export default class User extends Component {
 		const email = $('#update-email').val();
 		const fullname = $('#update-fullname').val();
 		const role = $('#update-role').val();
-		await self.props.dispatch(updateUser(id, { fullname, role }));
 		if (!id || !email || !fullname || role == 0) {
 			$('#update-user-error').text('Invalid field(s)');
 			return;
 		}
+		await self.props.dispatch(updateUser(id, { fullname, role }));
 		$('#update-user-error').text('');
 		$('#modal-update-user input').val('');
 		$('#modal-update-user select').val('');

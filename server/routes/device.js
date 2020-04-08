@@ -1,5 +1,5 @@
 import express from 'express';
-import { Device, Category, Calibration } from '../models';
+import { Device, Category, Calibration, Department } from '../models';
 import Sequelize, { Op } from 'sequelize';
 import Promise from 'bluebird';
 
@@ -19,7 +19,7 @@ module.exports = (app) => {
 		.get(async (req, res) => {
 			try {
 				let result = await Device.findAll({
-					include: [{ model: Category, attributes: ['id', 'name'] }],
+					include: [{ model: Category, attributes: ['id', 'name'] }, { model: Department, attributes: ['id', 'name'] }],
 					order: [['createdAt', 'DESC']], raw: true
 				});
 				await Promise.map(result, async (item, i) => {

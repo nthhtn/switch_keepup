@@ -163,6 +163,9 @@ export default class Device extends Component {
 		let optionCategory = {};
 		listCategory.forEach((item) => { optionCategory[item.name] = item.name; });
 		const { defaultCategory } = this.state;
+		const listDepartment = this.props.department.list;
+		let optionDepartment = {};
+		listDepartment.forEach((item) => { optionDepartment[item.name] = item.name; });
 		const optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
 		const listActive = this.props.device.list.filter((item) => item.status === 'active');
 		const listRemoved = this.props.device.list.filter((item) => item.status !== 'active');
@@ -272,7 +275,12 @@ export default class Device extends Component {
 												</div>
 												<div className="form-group col-sm-3">
 													<label htmlFor="create-department">Department</label>
-													<input type="text" className="form-control" id="create-department" />
+													<select className="form-control" id="create-department">
+														<option value='0'>Please select</option>
+														{listDepartment.map((item) => (
+															<option key={item.id} value={item.id}>{item.name}</option>
+														))}
+													</select>
 												</div>
 												<div className="form-group col-sm-3">
 													<label htmlFor="create-seller">Seller</label>
@@ -354,7 +362,12 @@ export default class Device extends Component {
 												</div>
 												<div className="form-group col-sm-3">
 													<label htmlFor="update-department">Department</label>
-													<input type="text" className="form-control" id="update-department" />
+													<select className="form-control" id="update-department">
+														<option value='0'>Please select</option>
+														{listDepartment.map((item) => (
+															<option key={item.id} value={item.id}>{item.name}</option>
+														))}
+													</select>
 												</div>
 												<div className="form-group col-sm-3">
 													<label htmlFor="update-seller">Seller</label>
@@ -401,6 +414,9 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='location' dataSort
 											filter={{ type: 'SelectFilter', options: optionLocation }}
 										>Location</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='Department.name' dataSort
+											filter={{ type: 'SelectFilter', options: optionDepartment }}
+										>Department</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='seller'>Seller</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='servicePartner'>Service Partner</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='deviceFunction'>Function</TableHeaderColumn>
@@ -425,6 +441,9 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='location' dataSort
 											filter={{ type: 'SelectFilter', options: optionLocation }}
 										>Location</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='Department.name' dataSort
+											filter={{ type: 'SelectFilter', options: optionDepartment }}
+										>Department</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='seller'>Seller</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='servicePartner'>Service Partner</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='deviceFunction'>Function</TableHeaderColumn>
