@@ -8,7 +8,7 @@ export function createCalibration(calibration, callback) {
 		}).catch((error) => callback(error));
 		const responseJson = await response.json();
 		if (responseJson.success) {
-			dispatch(createCalibrationSuccess(responseJson.result));
+			dispatch(createCalibrationSuccess({ ...calibration, ...responseJson.result }));
 			return callback(null);
 		}
 		return callback(new Error(responseJson.error));

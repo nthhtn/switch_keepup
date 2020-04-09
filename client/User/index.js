@@ -6,15 +6,17 @@ import { Provider } from 'react-redux';
 import Main from './components/Main';
 import store from './store';
 import { listCategory } from './actions/Category';
+import { listDepartment } from './actions/Department';
 
-store.dispatch(listCategory()).then(() => {
+store.dispatch(listCategory()).then(async () => {
+	await store.dispatch(listDepartment());
 	const rootComponent = (
 		<Provider store={store}>
 			<BrowserRouter>
 				<div id="page-container" className="sidebar-o sidebar-dark enable-page-overlay side-scroll page-header-fixed side-trans-enabled">
-					<nav id="sidebar">
+					<nav id="sidebar" style={{ overflowX: 'hidden' }}>
 						<div className="simplebar-scroll-content" style={{ paddingRight: '15px', marginBottom: '-30px' }}>
-							<div className="simplebar-content" style={{ paddingBottom: '15px', marginRight: '-15px' }}>
+							<div className="simplebar-content" style={{ paddingBottom: '15px', marginRight: '-15px', overflowX: 'hidden' }}>
 								<div className="content-header bg-white-5">
 									<Link className="font-w600 text-dual" to="/dashboard">
 										<i className="fa fa-circle-notch text-primary"></i>

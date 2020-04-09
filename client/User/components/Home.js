@@ -26,14 +26,22 @@ export default class Home extends Component {
 					<div className="block">
 						<div className="block-content">
 							<div className="row">
-								{list.map((item) =>
-									(<div className="col-md-2 text-center" key={item.id}>
-										<img src='https://cdn.onlinewebfonts.com/svg/img_191639.png' alt="" style={{ maxWidth: '100%' }} />
-										<Link to={{ pathname: '/dashboard/devices', state: { categoryName: item.name } }}>
-											<h4>{item.name}</h4>
-										</Link>
-									</div>))
-								}
+								{list.map((item) => {
+									let url = '/assets/images/asset.png';
+									if (item.name.indexOf('Tool') > -1) {
+										url = '/assets/images/tool.png';
+									} else if (item.name.indexOf('Measurement') > -1) {
+										url = '/assets/images/measurement.png';
+									}
+									return (
+										<div className="col-md-2 text-center" key={item.id}>
+											<Link to={{ pathname: '/dashboard/devices', state: { categoryName: item.name } }}>
+												<img src={url} alt="" style={{ maxWidth: '100%' }} />
+												<h4>{item.name}</h4>
+											</Link>
+										</div>
+									);
+								})}
 							</div>
 						</div>
 					</div>

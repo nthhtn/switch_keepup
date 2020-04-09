@@ -24,6 +24,8 @@ export default class Device extends Component {
 		const name = $('#create-name').val();
 		const categoryId = $('#create-category').val();
 		const categoryName = $('#create-category option:selected').text();
+		const departmentId = $('#create-department').val() == 0 ? null : $('#create-department').val();
+		const departmentName = departmentId ? $('#create-department option:selected').text() : '';
 		const description = $('#create-description').val() || '';
 		const serialNo = $('#create-serialno').val();
 		const calibrationPeriod = $('#create-calperiod').val();
@@ -38,7 +40,7 @@ export default class Device extends Component {
 		}
 		const basedata = {
 			id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
-			categoryId, 'Category.name': categoryName, status: 'active'
+			categoryId, 'Category.name': categoryName, departmentId, 'Department.name': departmentName, status: 'active'
 		};
 		self.props.dispatch(createDevice(basedata, (error) => {
 			if (error) {
@@ -58,6 +60,8 @@ export default class Device extends Component {
 		const name = $('#update-name').val();
 		const categoryId = $('#update-category').val();
 		const categoryName = $('#update-category option:selected').text();
+		const departmentId = $('#update-department').val() == 0 ? null : $('#update-department').val();
+		const departmentName = departmentId ? $('#update-department option:selected').text() : '';
 		const description = $('#update-description').val() || '';
 		const serialNo = $('#update-serialno').val();
 		const calibrationPeriod = $('#update-calperiod').val();
@@ -72,7 +76,7 @@ export default class Device extends Component {
 		}
 		const basedata = {
 			name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
-			categoryId, 'Category.name': categoryName
+			categoryId, 'Category.name': categoryName, departmentId, 'Department.name': departmentName
 		};
 		await self.props.dispatch(updateDevice(id, basedata));
 		$('#modal-update-device input').val('');

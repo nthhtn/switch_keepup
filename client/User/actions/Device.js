@@ -8,7 +8,7 @@ export function createDevice(device, callback) {
 		}).catch((error) => callback(error));
 		const responseJson = await response.json();
 		if (responseJson.success) {
-			dispatch(createDeviceSuccess(responseJson.result));
+			dispatch(createDeviceSuccess({ ...device, ...responseJson.result }));
 			return callback(null);
 		}
 		return callback(new Error(responseJson.error));

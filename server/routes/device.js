@@ -63,6 +63,20 @@ module.exports = (app) => {
 			}
 		});
 
+	router.route('/search')
+		.get(async (req, res) => {
+			try {
+				const result = await Device.findAll({
+					attributes: ['id', 'name'],
+					where: { name: { [Op.like]: `%${req.query.q}%` } },
+					raw: true
+				});
+				return res.json({ success: true, result });
+			} catch (error) {
+				return res.json({ success: false, error: error.message });
+			}
+		});
+
 	router.route('/:id')
 		.put(async (req, res) => {
 			const { id } = req.params;

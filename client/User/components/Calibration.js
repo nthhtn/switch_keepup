@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import swal from 'sweetalert2';
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 
 import { createCalibration, listCalibration, updateCalibration } from '../actions/Calibration';
 
@@ -10,7 +11,14 @@ export default class Calibration extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			allowNew: false,
+			isLoading: false,
+			multiple: false,
+			options: [],
+			selected: []
+		};
+		self = this;
 	}
 
 	async componentDidMount() {
@@ -23,20 +31,23 @@ export default class Calibration extends Component {
 		const date = $('#create-date').val();
 		const doc = $('#create-document').val() || '';
 		const status = $('#create-status').val();
-		if (!date || status == 0) {
+		const deviceId = $('#create-deviceid').val();
+		const deviceName = self.state.selected[0].name;
+		if (!deviceId || !deviceName || !date || status == 0) {
 			$('#create-calibration-error').text('Invalid field(s)');
 			return;
 		}
-		const basedata = { date, document: doc, status };
-		await self.props.dispatch(createCalibration(basedata));
-		if (self.props.calibration.errorMessage) {
-			$('#create-calibration-error').text(self.props.calibration.errorMessage);
-			return;
-		}
-		$('#modal-create-calibration input').val('');
-		$('#modal-create-calibration select').val('');
-		$('#create-calibration-error').text('');
-		$('#modal-create-calibration').modal('hide');
+		const basedata = { date, document: doc, status, deviceId, 'Device.name': deviceName };
+		await self.props.dispatch(createCalibration(basedata, (error) => {
+			if (error) {
+				$('#create-calibration-error').text(error.message);
+				return;
+			}
+			$('#modal-create-calibration input').val('');
+			$('#create-calibration-error').text('');
+			$('#modal-create-calibration').modal('hide');
+			self.setState({ selected: [], options: [] });
+		}));
 	}
 
 	async updateCalibration() {
@@ -44,24 +55,48 @@ export default class Calibration extends Component {
 		const date = $('#update-date').val();
 		const doc = $('#update-document').val() || '';
 		const status = $('#update-status').val();
-		if (!id || !date || !doc || status == 0) {
+		const deviceId = $('#update-deviceid').val();
+		const deviceName = self.state.selected[0].name;
+		if (!id || !deviceId || !deviceName || !date || status == 0) {
 			$('#update-calibration-error').text('Invalid field(s)');
 			return;
 		}
-		await self.props.dispatch(updateCalibration(id, { document: doc, status }));
+		await self.props.dispatch(updateCalibration(id, { document: doc, status, date, deviceId, 'Device.name': deviceName }));
 		$('#update-calibration-error').text('');
 		$('#modal-update-calibration input').val('');
 		$('#modal-update-calibration select').val('');
 		$('#modal-update-calibration').modal('hide');
+		self.setState({ selected: [], options: [] });
 	}
 
 	showUpdateModal(row) {
 		const { id, deviceId, date, status } = row;
+		self.setState({ selected: [{ id: deviceId, name: row['Device.name'] }] })
 		$('#update-id').val(id);
 		$('#update-deviceid').val(deviceId);
 		$('#update-date').val(date);
 		$('#update-status').val(status);
 		$('#modal-update-calibration').modal('show');
+	}
+
+	async searchDevice(query) {
+		self.setState({ isLoading: true, selected: [] });
+		const response = await fetch(`/api/devices/search?q=${query}`, { credentials: 'same-origin' });
+		const responseJson = await response.json();
+		const result = responseJson.result;
+		self.setState({ isLoading: false, options: result });
+	}
+
+	handleAddChange(selected) {
+		const selectedId = selected.length === 0 ? '' : selected[0].id;
+		$('#create-deviceid').val(selectedId);
+		self.setState({ selected });
+	}
+
+	handleEditChange(selected) {
+		const selectedId = selected.length === 0 ? '' : selected[0].id;
+		$('#update-deviceid').val(selectedId);
+		self.setState({ selected });
 	}
 
 	render() {
@@ -101,6 +136,21 @@ export default class Calibration extends Component {
 											</div>
 											<div className="block-content font-size-sm">
 												<div className="row">
+													<div className="form-group col-sm-12" hidden>
+														<label htmlFor="create-deviceid">Device ID*</label>
+														<input type="text" className="form-control" id="create-deviceid" />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="create-device">Device*</label>
+														<AsyncTypeahead
+															{...this.state}
+															id="create-device"
+															labelKey="name"
+															placeholder="Type to search"
+															onSearch={this.searchDevice}
+															onChange={this.handleAddChange}
+														/>
+													</div>
 													<div className="form-group col-sm-12">
 														<label htmlFor="create-date">Date*</label>
 														<input type="text" className="form-control" id="create-date" />
@@ -146,6 +196,21 @@ export default class Calibration extends Component {
 														<label htmlFor="update-id">ID*</label>
 														<input type="text" className="form-control" id="update-id" disabled />
 													</div>
+													<div className="form-group col-sm-12" hidden>
+														<label htmlFor="update-deviceid">Device ID*</label>
+														<input type="text" className="form-control" id="update-deviceid" />
+													</div>
+													<div className="form-group col-sm-12">
+														<label htmlFor="update-device">Device*</label>
+														<AsyncTypeahead
+															{...this.state}
+															id="update-device"
+															labelKey="name"
+															placeholder="Type to search"
+															onSearch={this.searchDevice}
+															onChange={this.handleEditChange}
+														/>
+													</div>
 													<div className="form-group col-sm-12">
 														<label htmlFor="update-date">Date*</label>
 														<input type="text" className="form-control" id="update-date" />
@@ -175,7 +240,7 @@ export default class Calibration extends Component {
 							</div>
 							<BootstrapTable data={listCalibration} id="table-calibration" version='4' search options={tableOptions} insertRow bodyStyle={{ cursor: 'pointer' }}>
 								<TableHeaderColumn dataField='id' isKey hidden>Calibration ID</TableHeaderColumn>
-								<TableHeaderColumn dataField='Device.id' >Device ID </TableHeaderColumn>
+								<TableHeaderColumn dataField='deviceId' >Device ID </TableHeaderColumn>
 								<TableHeaderColumn dataField='Device.name' >Device Name</TableHeaderColumn>
 								<TableHeaderColumn dataField='date' >Date</TableHeaderColumn>
 								<TableHeaderColumn dataField='status' columnClassName={statusClassName}>Status</TableHeaderColumn>
