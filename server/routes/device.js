@@ -2,6 +2,7 @@ import express from 'express';
 import { Device, Category, Calibration, Department } from '../models';
 import Sequelize, { Op } from 'sequelize';
 import Promise from 'bluebird';
+import { flatten } from '../helpers/flatten';
 
 module.exports = (app) => {
 
@@ -23,7 +24,7 @@ module.exports = (app) => {
 					order: [['createdAt', 'DESC']], raw: true
 				});
 				await Promise.map(result, async (item, i) => {
-					const lastCalibration = await Calibration.findAll({
+					let lastCalibration = await Calibration.findAll({
 						attributes: ['id', 'date'],
 						where: { date: { [Op.lte]: Sequelize.fn('curdate') }, deviceId: item.id },
 						include: [{ model: Device, attributes: ['id'] }],
@@ -31,7 +32,8 @@ module.exports = (app) => {
 						limit: 1,
 						raw: true
 					});
-					const nextCalibration = await Calibration.findAll({
+					lastCalibration = { id: '', date: '', ...lastCalibration[0] };
+					let nextCalibration = await Calibration.findAll({
 						attributes: ['id', 'date'],
 						where: { date: { [Op.gt]: Sequelize.fn('curdate') }, deviceId: item.id },
 						include: [{ model: Device, attributes: ['id'] }],
@@ -39,7 +41,8 @@ module.exports = (app) => {
 						limit: 1,
 						raw: true
 					});
-					result[i] = { ...item, lastCalibration: lastCalibration[0], nextCalibration: nextCalibration[0] };
+					nextCalibration = { id: '', date: '', ...nextCalibration[0] };
+					result[i] = flatten({ ...item, lastCalibration, nextCalibration });
 				});
 				return res.json({ success: true, result });
 			} catch (error) {

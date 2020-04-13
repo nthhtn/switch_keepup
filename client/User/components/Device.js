@@ -411,7 +411,8 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='Category.name' dataSort
 											filter={{ type: 'SelectFilter', options: optionCategory, defaultValue: defaultCategory }}
 										>Category</TableHeaderColumn>
-										<TableHeaderColumn width='200px' dataField='createdAt' dataSort>Added at</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='lastCalibration.date' dataSort>Last cal.</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='nextCalibration.date' dataSort>Next cal.</TableHeaderColumn>
 										<TableHeaderColumn width='300px' dataField='description'>Description</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='serialNo'>S/N</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>
@@ -425,6 +426,7 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='servicePartner'>Service Partner</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='deviceFunction'>Function</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='comment'>Comment</TableHeaderColumn>
+										<TableHeaderColumn width='200px' dataField='createdAt' dataSort>Added at</TableHeaderColumn>
 									</BootstrapTable>
 								</TabPane>
 							</Tab>
@@ -438,7 +440,8 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='Category.name' dataSort
 											filter={{ type: 'SelectFilter', options: optionCategory }}
 										>Category</TableHeaderColumn>
-										<TableHeaderColumn width='200px' dataField='createdAt' dataSort>Added at</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='lastCalibration.date' dataSort>Last cal.</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='nextCalibration.date' dataSort>Next cal.</TableHeaderColumn>
 										<TableHeaderColumn width='300px' dataField='description'>Description</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='serialNo'>S/N</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>
@@ -452,6 +455,7 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='servicePartner'>Service Partner</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='deviceFunction'>Function</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='comment'>Comment</TableHeaderColumn>
+										<TableHeaderColumn width='200px' dataField='createdAt' dataSort>Added at</TableHeaderColumn>
 									</BootstrapTable>
 								</TabPane>
 							</Tab>
