@@ -7,6 +7,7 @@ import Device from './Device';
 import Calibration from './Calibration';
 import Department from './Department';
 import User from './User';
+import Profile from './Profile';
 
 class Main extends Component {
 
@@ -28,6 +29,8 @@ class Main extends Component {
 					render={() => <Department {...this.props} />} />
 				<Route exact path='/dashboard/users'
 					render={() => <User {...this.props} />} />
+				<Route exact path='/dashboard/profile'
+					render={() => <Profile {...this.props} />} />
 				<Route path='*'
 					render={() => <Home {...this.props} />} />
 			</Switch>

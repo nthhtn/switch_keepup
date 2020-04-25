@@ -1,3 +1,5 @@
+import { createCalibration } from './Calibration';
+
 export function createDevice(device, callback) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/devices`, {
@@ -8,7 +10,11 @@ export function createDevice(device, callback) {
 		}).catch((error) => callback(error));
 		const responseJson = await response.json();
 		if (responseJson.success) {
-			dispatch(createDeviceSuccess({ ...device, ...responseJson.result }));
+			const result = { ...device, ...responseJson.result };
+			dispatch(createDeviceSuccess(result));
+			if (device['nextCalibration.date']) {
+				dispatch(createCalibration({ deviceId: result.id, date: device['nextCalibration.date'], status: 'pending' }));
+			}
 			return callback(null);
 		}
 		return callback(new Error(responseJson.error));

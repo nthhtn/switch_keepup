@@ -1,8 +1,4 @@
-function handleError(error) {
-	return { type: 'USER_ERROR', errorMessage: error };
-};
-
-export function createUser(user) {
+export function createUser(user, callback) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/users`, {
 			credentials: 'same-origin',
@@ -11,7 +7,11 @@ export function createUser(user) {
 			body: JSON.stringify(user)
 		});
 		const responseJson = await response.json();
-		return responseJson.success ? dispatch(createUserSuccess(responseJson.result)) : dispatch(handleError(responseJson.error));
+		if (responseJson.success) {
+			dispatch(createUserSuccess(responseJson.result));
+			return callback(null);
+		}
+		return callback(new Error(responseJson.error));
 	};
 };
 
@@ -64,3 +64,36 @@ export function deleteManyUsers(filter) {
 export function deleteManyUsersSuccess(filter) {
 	return { type: 'DELETE_MANY_USERS', filter };
 }
+
+export function getMyProfile() {
+	return async (dispatch) => {
+		const response = await fetch(`/api/users/me`, { credentials: 'same-origin' });
+		const responseJson = await response.json();
+		dispatch(getMyProfileSuccess(responseJson.result));
+	};
+};
+
+export function getMyProfileSuccess(result) {
+	return { type: 'GET_MY_PROFILE', result };
+};
+
+export function updateMyProfile({ fullname, oldpass, newpass }, callback) {
+	return async (dispatch) => {
+		const response = await fetch(`/api/users/me`, {
+			credentials: 'same-origin',
+			method: 'put',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ fullname, oldpass, newpass })
+		});
+		const responseJson = await response.json();
+		if (responseJson.success) {
+			dispatch(getMyProfileSuccess({ fullname }));
+			return callback(null);
+		}
+		return callback(new Error(responseJson.error));
+	};
+};
+
+export function updateMyProfileSuccess(data) {
+	return { type: 'UPDATE_MY_PROFILE', data };
+};

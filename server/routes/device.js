@@ -25,7 +25,7 @@ module.exports = (app) => {
 				});
 				await Promise.map(result, async (item, i) => {
 					let lastCalibration = await Calibration.findAll({
-						attributes: ['id', 'date'],
+						attributes: ['id', 'date', 'status'],
 						where: { date: { [Op.lte]: Sequelize.fn('curdate') }, deviceId: item.id },
 						include: [{ model: Device, attributes: ['id'] }],
 						order: [['date', 'DESC']],
@@ -34,7 +34,7 @@ module.exports = (app) => {
 					});
 					lastCalibration = { id: '', date: '', ...lastCalibration[0] };
 					let nextCalibration = await Calibration.findAll({
-						attributes: ['id', 'date'],
+						attributes: ['id', 'date', 'status'],
 						where: { date: { [Op.gt]: Sequelize.fn('curdate') }, deviceId: item.id },
 						include: [{ model: Device, attributes: ['id'] }],
 						order: [['date', 'ASC']],

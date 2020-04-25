@@ -4,6 +4,7 @@ import { Tabs, Tab, TabPane, ButtonGroup } from 'react-bootstrap';
 import swal from 'sweetalert2';
 
 import { createDevice, listDevice, updateDevice, updateManyDevices, deleteManyDevices } from '../actions/Device';
+import { differentDays } from '../helpers';
 
 let self;
 
@@ -17,6 +18,7 @@ export default class Device extends Component {
 
 	async componentDidMount() {
 		await this.props.dispatch(listDevice());
+		$('#create-firstcal').datepicker({ format: 'yyyy-mm-dd', startDate: "now()" });
 	}
 
 	createDevice() {
@@ -34,13 +36,15 @@ export default class Device extends Component {
 		const servicePartner = $('#create-partner').val() || '';
 		const deviceFunction = $('#create-function').val() || '';
 		const comment = $('#create-comment').val() || '';
+		const firstCalibration = $('#create-firstcal').val() || '';
 		if (!id || !name || !serialNo || calibrationPeriod <= 0 || categoryId == 0 || location == 0) {
 			$('#create-device-error').text('Invalid field(s)');
 			return;
 		}
 		const basedata = {
 			id, name, description, serialNo, calibrationPeriod, location, seller, servicePartner, deviceFunction, comment,
-			categoryId, 'Category.name': categoryName, departmentId, 'Department.name': departmentName, status: 'active'
+			categoryId, 'Category.name': categoryName, departmentId, 'Department.name': departmentName, status: 'active',
+			'nextCalibration.date': firstCalibration
 		};
 		self.props.dispatch(createDevice(basedata, (error) => {
 			if (error) {
@@ -171,6 +175,10 @@ export default class Device extends Component {
 		let optionDepartment = {};
 		listDepartment.forEach((item) => { optionDepartment[item.name] = item.name; });
 		const optionLocation = { Lappeenranta: 'Lappeenranta', Vaasa: 'Vaasa' };
+		const lastStatusClassName = (cell, row, rowid, colid) =>
+			(row['lastCalibration.date'] && row['lastCalibration.status'] === 'pending') ? 'badge-danger' : '';
+		const nextStatusClassName = (cell, row, rowid, colid) =>
+			(cell && differentDays(new Date(), new Date(cell)) <= 30) ? 'badge-warning' : '';
 		const listActive = this.props.device.list.filter((item) => item.status === 'active');
 		const listRemoved = this.props.device.list.filter((item) => item.status !== 'active');
 		const createCustomInsertButton = (onClick) => {
@@ -302,6 +310,10 @@ export default class Device extends Component {
 													<label htmlFor="create-comment">Comment</label>
 													<input type="text" className="form-control" id="comment" />
 												</div>
+												<div className="form-group col-sm-3">
+													<label htmlFor="create-firstcal">First calibration</label>
+													<input type="text" className="form-control" id="create-firstcal" />
+												</div>
 											</div>
 										</div>
 										<label id='create-device-error' style={{ color: 'red', padding: '20px' }}></label>
@@ -411,8 +423,12 @@ export default class Device extends Component {
 										<TableHeaderColumn width='150px' dataField='Category.name' dataSort
 											filter={{ type: 'SelectFilter', options: optionCategory, defaultValue: defaultCategory }}
 										>Category</TableHeaderColumn>
-										<TableHeaderColumn width='150px' dataField='lastCalibration.date' dataSort>Last cal.</TableHeaderColumn>
-										<TableHeaderColumn width='150px' dataField='nextCalibration.date' dataSort>Next cal.</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='lastCalibration.date' columnClassName={lastStatusClassName} dataSort>
+											Last cal.
+										</TableHeaderColumn>
+										<TableHeaderColumn width='150px' dataField='nextCalibration.date' columnClassName={nextStatusClassName} dataSort>
+											Next cal.
+										</TableHeaderColumn>
 										<TableHeaderColumn width='300px' dataField='description'>Description</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='serialNo'>S/N</TableHeaderColumn>
 										<TableHeaderColumn width='150px' dataField='calibrationPeriod'>Cal. period</TableHeaderColumn>

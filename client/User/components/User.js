@@ -26,15 +26,16 @@ export default class User extends Component {
 			return;
 		}
 		const basedata = { email, fullname, role };
-		await self.props.dispatch(createUser(basedata));
-		if (self.props.user.errorMessage) {
-			$('#create-user-error').text(self.props.user.errorMessage);
-			return;
-		}
-		$('#modal-create-user input').val('');
-		$('#modal-create-user select').val('');
-		$('#create-user-error').text('');
-		$('#modal-create-user').modal('hide');
+		self.props.dispatch(createUser(basedata, (error) => {
+			if (error) {
+				$('#create-user-error').text(error.message);
+				return;
+			}
+			$('#modal-create-user input').val('');
+			$('#modal-create-user select').val('');
+			$('#create-user-error').text('');
+			$('#modal-create-user').modal('hide');
+		}));
 	}
 
 	async updateUser() {
@@ -72,7 +73,7 @@ export default class User extends Component {
 			);
 		}
 		const tableOptions = { insertBtn: createCustomInsertButton, onRowClick: this.showUpdateModal };
-		const roleClassName = (cell, row, rowid, colid) => cell === 'manager' ? 'badge-success' : 'badge-danger';
+		const roleClassName = (cell, row, rowid, colid) => cell === 'engineer' ? 'badge-success' : 'badge-danger';
 		return (
 			<main id="main-container">
 				<div className="bg-body-light">

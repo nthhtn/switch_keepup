@@ -1,4 +1,4 @@
-export function createDepartment(department) {
+export function createDepartment(department, callback) {
 	return async (dispatch) => {
 		const response = await fetch(`/api/departments`, {
 			credentials: 'same-origin',
@@ -7,7 +7,11 @@ export function createDepartment(department) {
 			body: JSON.stringify(department)
 		});
 		const responseJson = await response.json();
-		return dispatch(createDepartmentSuccess(responseJson.result));
+		if (responseJson.success) {
+			dispatch(createDepartmentSuccess(responseJson.result));
+			return callback(null);
+		}
+		return callback(responseJson.error);
 	};
 };
 

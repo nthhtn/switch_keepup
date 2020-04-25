@@ -26,15 +26,16 @@ export default class Department extends Component {
 			return;
 		}
 		const basedata = { name, description };
-		await self.props.dispatch(createDepartment(basedata));
-		if (self.props.user.errorMessage) {
-			$('#create-department-error').text(self.props.user.errorMessage);
-			return;
-		}
-		$('#modal-create-department input').val('');
-		$('#modal-update-department textarea').val('');
-		$('#create-department-error').text('');
-		$('#modal-create-department').modal('hide');
+		self.props.dispatch(createDepartment(basedata, (error) => {
+			if (error) {
+				$('#create-department-error').text(error.message);
+				return;
+			}
+			$('#modal-create-department input').val('');
+			$('#modal-update-department textarea').val('');
+			$('#create-department-error').text('');
+			$('#modal-create-department').modal('hide');
+		}));
 	}
 
 	async updateDepartment() {

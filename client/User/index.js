@@ -7,8 +7,10 @@ import Main from './components/Main';
 import store from './store';
 import { listCategory } from './actions/Category';
 import { listDepartment } from './actions/Department';
+import { getMyProfile } from './actions/User';
 
-store.dispatch(listCategory()).then(async () => {
+store.dispatch(getMyProfile()).then(async () => {
+	await store.dispatch(listCategory());
 	await store.dispatch(listDepartment());
 	const rootComponent = (
 		<Provider store={store}>
@@ -58,6 +60,12 @@ store.dispatch(listCategory()).then(async () => {
 											<Link className="nav-main-link active" to="/dashboard/users">
 												<i className="nav-main-link-icon si si-users"></i>
 												<span className="nav-main-link-name">User</span>
+											</Link>
+										</li>
+										<li className="nav-main-item">
+											<Link className="nav-main-link active" to="/dashboard/profile">
+												<i className="nav-main-link-icon si si-key"></i>
+												<span className="nav-main-link-name">Profile</span>
 											</Link>
 										</li>
 										<li className="nav-main-item">
